@@ -32,6 +32,8 @@ Vue.component('custom-nav', {
                     <div class="navbar-menu" v-bind:class="{ 'is-active': menuShown }">
                         <div class="navbar-start is-hidden-touch">
                             <!--<a class="navbar-item" href="./?/me/newstory" v-on:click.prevent="">Write a story</a>-->
+                            <a class="navbar-item">My Databases</a>
+                            <a class="navbar-item">Explore</a>
                         </div>
                         <div class="navbar-end">
                             <div class="navbar-item has-dropdown is-hoverable">

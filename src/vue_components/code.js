@@ -42,7 +42,6 @@ Vue.component('db-schema-code', {
 				indexesText += `"CREATE ${index.type} INDEX ${index.name} ON ${table.name} (${index.onColumns})", `;
 			}
 
-			console.log(table.name);
 			tableText += `        "${table.name}": {
 			"cols": [
 				${columnsText}
