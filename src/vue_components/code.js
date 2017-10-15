@@ -58,8 +58,7 @@ Vue.component('db-schema-code', {
 		},
 		${tableText}
 	}
-}
-			`;
+}`;
 	},
 	methods: {
 		close: function() {
