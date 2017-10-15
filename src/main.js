@@ -28,7 +28,6 @@ var app = new Vue({
                     {
                         type: "UNIQUE",
                         name: "_key",
-                        onTable: "",
                         onColumns: "json_id,"
                     }
                 ],

@@ -13,7 +13,7 @@ Vue.component('db-table', {
 			this.value.indexes.push({
 				type: "",
 				name: "",
-				onTable: "",
+				//onTable: "",
 				onColumns: "" // Will become Array of strings later
 			});
 		}
@@ -59,15 +59,12 @@ Vue.component('db-table-index', {
 	props: ['value', 'tables'],
 	template: `
 		<div style="border-bottom: 1px solid #BBBBCC; font-size: 1.05em;">
-			<input type="text" v-model="value.name" placeholder="Index Name" style="margin-bottom: 5px; display: inline; width: 24%; font-size: inherit; color: inherit; background-color: inherit; border: none; border-right: 1px solid #BBBBCC; margin: 0;">
-			<select v-model="value.type" style="display: inline; margin-bottom: 5px; width: 24%; font-size: inherit; color: inherit; background-color: inherit; border: none; margin: 0;">
+			<input type="text" v-model="value.name" placeholder="Index Name" style="margin-bottom: 5px; display: inline; width: 32%; font-size: inherit; color: inherit; background-color: inherit; border: none; border-right: 1px solid #BBBBCC; margin: 0;">
+			<select v-model="value.type" style="display: inline; margin-bottom: 5px; width: 32%; font-size: inherit; color: inherit; background-color: inherit; border: none; margin: 0;">
 				<option value="UNIQUE">Unique</option>
 				<option value="PRIMARY">Primary</option> <!-- TODO: How to handle AutoIncrement? -->
 			</select>
-			<select v-model="value.onTable" style="display: inline; margin-bottom: 5px; width: 24%; font-size: inherit; color: inherit; background-color: inherit; border: none; margin: 0;">
-				<option v-for="table in tables" :value="table.name">{{ table.name }}</option>
-			</select>
-			<input type="text" v-model="value.onColumns" placeholder="On Columns (comma separated)" style="margin-bottom: 5px; display: inline; width: 24%; font-size: inherit; color: inherit; background-color: inherit; border: none; border-right: 1px solid #BBBBCC; margin: 0;">
+			<input type="text" v-model="value.onColumns" placeholder="On Columns (comma separated)" style="margin-bottom: 5px; display: inline; width: 32%; font-size: inherit; color: inherit; background-color: inherit; border: none; border-right: 1px solid #BBBBCC; margin: 0;">
 		</div>
 		`
 });

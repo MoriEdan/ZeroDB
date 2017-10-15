@@ -25,7 +25,7 @@ Vue.component('db-schema-code', {
 
 			let indexesText = "";
 			for (var index of table.indexes) {
-				indexesText += `"CREATE ${index.type} INDEX ${index.name} ON ${index.onTable} (${index.onColumns})", `;
+				indexesText += `"CREATE ${index.type} INDEX ${index.name} ON ${table.name} (${index.onColumns})", `;
 			}
 
 			console.log(table.name);
@@ -56,8 +56,7 @@ Vue.component('db-schema-code', {
 			"indexes": ["CREATE UNIQUE INDEX path ON json (directory, file_name)"],
 			"schema_changed": 0
 		},
-		${tableText}
-	}
+		${tableText}}
 }`;
 	},
 	methods: {
