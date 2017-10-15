@@ -27,9 +27,9 @@ var app = new Vue({
                 indexes: [
                     {
                         type: "UNIQUE",
-                        name: "",
+                        name: "_key",
                         onTable: "",
-                        onColumns: ""
+                        onColumns: "json_id,"
                     }
                 ],
                 schema_changed: 0
