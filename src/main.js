@@ -16,7 +16,19 @@ var app = new Vue({
         dbFile: "",
         dbVersion: 2,
         siteInfo: null,
-        tables: [],
+        tables: [
+            {
+                name: "json",
+                columns: [
+                    { name: "json_id", type: "INTEGER PRIMARY KEY AUTOINCREMENT" },
+                    { name: "directory", type: "TEXT" },
+                    { name: "file_name", type: "TEXT" },
+                    { name: "cert_user_id", type: "TEXT" }
+                ],
+                indexes: [ { type: "UNIQUE", name: "path", onColumns: "directory, file_name" } ],
+                schema_changed: 0
+            }
+        ],
         showCode: false
     },
     methods: {
@@ -43,7 +55,7 @@ var app = new Vue({
             <custom-nav v-on:add-table="addTable" v-on:add-mapping="addMapping" v-on:show-code="showCode = true;"></custom-nav>
             <section class="section">
                 <div class="container">
-                    <p style="margin-bottom: 10px;">Visual editor to create Dbschema files. Still a work in progress. <em>NOTE: The On Columns field for indexes are comma separated and the json table and json_id columns are automatically created.</em></p>
+                    <p style="margin-bottom: 15px;">Visual editor to create Dbschema files. Still a work in progress. <em>NOTE: The On Columns field for indexes are comma separated and the json table and json_id columns are automatically created.</em></p>
                     <div style="width: 200px; display: inline-block; margin-right: 10px; margin-bottom: 10px;">
                         <div class="box">
                             <h3 style="border-bottom: 1px solid #BBBBCC; padding-bottom: 5px; margin-bottom: 20px;">Settings</h3>
@@ -58,7 +70,7 @@ var app = new Vue({
                             </div>
                         </div>
                     </div>
-                    <db-table v-for="table in tables" v-model="table" :tables="tables"></db-table>
+                    <db-table v-for="table in tables" v-model="table" :tables="tables" v-if="table.name != 'json'"></db-table>
                 </div>
             </section>
             <db-schema-code v-if="showCode" v-model="showCode" :tables="tables" :name="dbName" :file="dbFile" :version="dbVersion"></db-schema-code>

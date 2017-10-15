@@ -50,6 +50,8 @@ Vue.component('db-table-column', { // TODO: How to handle referencing another co
 				<option value="INTEGER">Integer</option>
 				<option value="TEXT">Text</option>
 				<option value="DATETIME">DateTime</option>
+				<option value="INTEGER AUTOINCREMENT">Integer Autoincrement</option>
+				<option value="INTEGER PRIMARY KEY AUTOINCREMENT">Integer Priamry Key Autoincrement</option>
 			</select>
 		</div>
 		`

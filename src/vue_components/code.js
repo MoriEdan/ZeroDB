@@ -14,14 +14,28 @@ Vue.component('db-schema-code', {
 		var tables = this.tables;
 
 		var tableText = "";
-		for (var table of tables) {
-			let columnsText = "";
-			for (column of table.columns) {
-				columnsText += `["${column.name}", "${column.type}"],
-					`;
+		//for (var table of tables) {
+		for (var i = 0; i < tables.length; i++) {
+			let table = tables[i];
+			let comma = ",";
+			if (i == tables.length - 1) {
+				comma = "";
 			}
 
-			columnsText += `["json_id", "INTEGER REFERENCES json (json_id)"]`;
+			let columnsText = "";
+			for (var ii = 0; ii < table.columns.length; ii++) {
+				let column = table.columns[ii];
+				if (table.name == "json" && ii == table.columns.length - 1) {
+					columnsText += `["${column.name}", "${column.type}"]`;
+				} else {
+					columnsText += `["${column.name}", "${column.type}"],
+				`;	
+				}
+			}
+
+			if (table.name != "json") {
+				columnsText += `["json_id", "INTEGER REFERENCES json (json_id)"]`;
+			}
 
 			let indexesText = "";
 			for (var index of table.indexes) {
@@ -29,14 +43,14 @@ Vue.component('db-schema-code', {
 			}
 
 			console.log(table.name);
-			tableText += `"${table.name}": {
-				"cols": [
-					${columnsText}
-				],
-				"indexes": [${indexesText}],
-				"schema_changed": 0
-			},
-			`;
+			tableText += `        "${table.name}": {
+			"cols": [
+				${columnsText}
+			],
+			"indexes": [${indexesText}],
+			"schema_changed": ${table.schema_changed}
+		}${comma}
+`;
 		}
 
 		this.code += `{
@@ -46,17 +60,7 @@ Vue.component('db-schema-code', {
 	"maps": {
 	}
 	"tables": {
-		"json": {
-			"cols": [
-				["json_id": "INTEGER PRIMARY KEY AUTOINCREMENT"],
-				["directory", "TEXT"],
-				["file_name", "TEXT"],
-				["cert_user_id", "TEXT"]
-			],
-			"indexes": ["CREATE UNIQUE INDEX path ON json (directory, file_name)"],
-			"schema_changed": 0
-		},
-		${tableText}}
+${tableText}	}
 }`;
 	},
 	methods: {
