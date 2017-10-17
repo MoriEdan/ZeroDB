@@ -2,6 +2,7 @@ var Vue = require("vue/dist/vue.min.js");
 var Router = require("../router.js");
 
 var Home = {
+	props: ['siteInfo'],
 	data: function() {
         return {
 	        dbName: "",
@@ -20,7 +21,8 @@ var Home = {
 	                schema_changed: 0
 	            }
 	        ],
-	        showCode: false
+	        showCode: false,
+	        showJSON: false
 	    }
     },
 	methods: {
@@ -40,11 +42,14 @@ var Home = {
 	    },
 	    addMapping: function() {
 
+	    },
+	    selectUser: function(callback = null) {
+	    	this.$emit('select-user', callback);
 	    }
 	},
 	template: `
 		<div>
-			<custom-nav v-on:add-table="addTable" v-on:add-mapping="addMapping" v-on:show-code="showCode = true;"></custom-nav>
+			<custom-nav v-on:add-table="addTable" v-on:add-mapping="addMapping" v-on:show-code="showCode = true;" v-on:select-user="selectUser" :site-info="siteInfo"></custom-nav>
 			<section class="section">
 			    <div class="container">
 			        <p style="margin-bottom: 15px;">Visual editor to create Dbschema files. Still a work in progress. <em>NOTE: The On Columns field for indexes are comma separated and the json table and json_id columns are automatically created.</em></p>
@@ -62,7 +67,7 @@ var Home = {
 			                </div>
 			            </div>
 			        </div>
-			        <db-table v-for="table in tables" v-model="table" :tables="tables" v-if="table.name != 'json'"></db-table>
+			        <db-table v-for="table in tables" v-model="table" :tables="tables" v-if="table.name != 'json' && !showJSON"></db-table>
 			    </div>
 			</section>
 			<db-schema-code v-if="showCode" v-model="showCode" :tables="tables" :name="dbName" :file="dbFile" :version="dbVersion"></db-schema-code>

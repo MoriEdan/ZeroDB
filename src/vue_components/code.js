@@ -38,8 +38,13 @@ Vue.component('db-schema-code', {
 			}
 
 			let indexesText = "";
-			for (var index of table.indexes) {
-				indexesText += `"CREATE ${index.type} INDEX ${index.name} ON ${table.name} (${index.onColumns})", `;
+			for (var i3 = 0; i3 < table.indexes.length; i3++) {
+				let index = table.indexes[i3];
+				let end = ", ";
+				if (i3 == table.indexes.length - 1) {
+					end = "";
+				}
+				indexesText += `"CREATE ${index.type} INDEX ${index.name} ON ${table.name} (${index.onColumns})"${end}`;
 			}
 
 			tableText += `        "${table.name}": {
@@ -57,7 +62,7 @@ Vue.component('db-schema-code', {
 	"db_file": "${file}",
 	"version": ${version},
 	"maps": {
-	}
+	},
 	"tables": {
 ${tableText}	}
 }`;

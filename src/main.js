@@ -17,9 +17,14 @@ var app = new Vue({
         currentView: null,
         siteInfo: null
     },
+    methods: {
+        selectUser: function(callback = null) {
+            page.selectUser(callback);
+        }
+    },
     template: `
         <div>
-            <component ref="view" v-bind:is="currentView"></component>
+            <component ref="view" :is="currentView" :site-info="siteInfo" v-on:select-user="selectUser"></component>
         </div>
         `
 });
@@ -49,6 +54,7 @@ class ZeroApp extends ZeroFrame {
         this.cmd("certSelect", {accepted_domains: ["zeroid.bit", "kaffie.bit", "cryptoid.bit"]}, () => {
             // TODO: Will this work always?
             //app.getUserInfo();
+            app.siteInfo = this.site_info;
             if (f != null && typeof f == 'function') f();
         });
         return false;
@@ -58,7 +64,9 @@ class ZeroApp extends ZeroFrame {
 page = new ZeroApp();
 
 var Home = require("./router_pages/home.js");
+var MyDatabases = require("./router_pages/my_databases.js");
 
 VueZeroFrameRouter.VueZeroFrameRouter_Init(Router, app, [
+    { route: 'me/databases', component: MyDatabases },
     { route: '', component: Home }
 ]);
