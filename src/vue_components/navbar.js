@@ -53,13 +53,13 @@ Vue.component('custom-nav', {
                             <a class="navbar-item" v-on:click.prevent="login()" v-if="isLoggedIn">{{ userInfo.cert_user_id }}</a>
                             <a class="navbar-item" v-on:click.prevent="login()" v-else>Login</a>
                             <a class="navbar-item" v-on:click.prevent="goto('me/databases')" v-if="isLoggedIn">My Databases</a>
-                            <a class="navbar-item">Explore</a>
+                            <a class="navbar-item" v-on:click.prevent="goto('explore')">Explore</a>
                         </div>
                         <div class="navbar-end">
                             <a class="navbar-item is-hidden-desktop" v-on:click.prevent="login()" v-if="isLoggedIn">{{ userInfo.cert_user_id }}</a>
                             <a class="navbar-item is-hidden-desktop" v-on:click.prevent="login()" v-else>Login</a>
                             <a class="navbar-item is-hidden-desktop" v-on:click.prevent="goto('me/databases')" v-if="isLoggedIn">My Databases</a>
-                            <a class="navbar-item is-hidden-desktop">Explore</a>
+                            <a class="navbar-item is-hidden-desktop" v-on:click.prevent="goto('explore')">Explore</a>
                             <div class="navbar-item has-dropdown is-hoverable" v-if="!hideRight">
                                 <a class="navbar-link">Add</a>
                                 <div class="navbar-dropdown is-right">

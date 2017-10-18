@@ -1,7 +1,8 @@
 var Vue = require("vue/dist/vue.min.js");
 var Router = require("../router.js");
+var moment = require('moment');
 
-var MyDatabases = {
+var Explore = {
 	props: ['userInfo'],
 	data: function() {
         return {
@@ -22,7 +23,7 @@ var MyDatabases = {
 		},
 		getDatabases: function() {
 			var that = this;
-	    	page.getDatabases((databases) => {
+	    	page.getAllDatabases((databases) => {
 	    		that.databases = databases;
 	    	});
 		},
@@ -33,6 +34,9 @@ var MyDatabases = {
 	    },
 	    selectUser: function(callback = null) {
 	    	this.$emit('select-user', callback);
+	    },
+	    dateCreated: function(date) {
+	    	return moment(date).fromNow();
 	    }
 	},
 	template: `
@@ -43,7 +47,10 @@ var MyDatabases = {
 					<a class="button is-small is-primary" v-on:click.prevent="goto('')">New Database</a>
 					<div v-for="database in databases" style="margin-top: 5px;">
 						<h3><a v-on:click.prevent="goto('me/database/' + database.database_id)">{{ database.name }}</a></h3>
-						<p>{{ database.file }} - v{{ database.version }}</p>
+						<p>
+							{{ database.file }} - v{{ database.version }}<br>
+							{{ database.cert_user_id }} - {{ dateCreated(database.date_added) }}
+						</p>
 					</div>
 				</div>
 			</section>
@@ -51,4 +58,4 @@ var MyDatabases = {
 		`
 };
 
-module.exports = MyDatabases;
+module.exports = Explore;

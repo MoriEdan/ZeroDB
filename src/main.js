@@ -29,7 +29,7 @@ var app = new Vue({
             }
 
             var that = this;
-            page.cmd('dbQuery', ['SELECT key, value FROM keyvalue LEFT JOIN json USING (json_id) WHERE directory="users/' + this.siteInfo.auth_address + '"'], (rows) => {
+            page.cmd('dbQuery', ['SELECT key, value FROM keyvalue LEFT JOIN json USING (json_id) WHERE directory="users/' + this.siteInfo.auth_address + '" AND cert_user_id="' + this.siteInfo.cert_user_id + '"'], (rows) => {
                 var keyvalue = {};
 
                 for (var i = 0; i < rows.length; i++) {
@@ -83,12 +83,18 @@ class ZeroApp extends ZeroFrame {
         return false;
     }
 
+    getAllDatabases(f) {
+        if (!app.userInfo || !app.userInfo.cert_user_id) return;
+        page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id)"], f);
+    }
+
     getDatabases(f) {
-        page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id) WHERE directory='users/" + app.userInfo.auth_address + "'"], f);
+        if (!app.userInfo || !app.userInfo.cert_user_id) return;
+        page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id) WHERE directory='users/" + app.userInfo.auth_address + "' AND cert_user_id='" + app.userInfo.cert_user_id + "'"], f);
     }
 
     getDatabase(dbId, f) {
-        page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id) WHERE directory='users/" + app.userInfo.auth_address + "' AND database_id=" + dbId], (databases) => {
+        page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id) WHERE directory='users/" + app.userInfo.auth_address + "' AND cert_user_id='" + app.userInfo.cert_user_id + "' AND database_id=" + dbId], (databases) => {
             if (f != null && typeof f == 'function') f(databases[0]);
         });
     }
@@ -167,8 +173,10 @@ page = new ZeroApp();
 
 var Home = require("./router_pages/home.js");
 var MyDatabases = require("./router_pages/my_databases.js");
+var Explore = require("./router_pages/explore.js");
 
 VueZeroFrameRouter.VueZeroFrameRouter_Init(Router, app, [
+    { route: 'explore', component: Explore },
     { route: 'me/databases', component: MyDatabases },
     { route: 'me/database/:id', component: Home },
     { route: '', component: Home }
