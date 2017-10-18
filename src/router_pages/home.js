@@ -2,9 +2,10 @@ var Vue = require("vue/dist/vue.min.js");
 var Router = require("../router.js");
 
 var Home = {
-	props: ['siteInfo'],
+	props: ['userInfo'],
 	data: function() {
         return {
+        	dbId: null,
 	        dbName: "",
 	        dbFile: "",
 	        dbVersion: 2,
@@ -25,7 +26,29 @@ var Home = {
 	        showJSON: false
 	    }
     },
+    beforeMount: function() {
+    	if (Router.currentParams["id"]) {
+	    	if (!this.userInfo) {
+	    		this.$emit('get-user-info');
+	    		this.$parent.$on('getUserInfoDone', this.getDatabase);
+	    	} else {
+	    		this.getDatabase();
+	    	}
+    	}
+    },
 	methods: {
+		getDatabase: function() {
+			var that = this;
+			page.getDatabase(Router.currentParams["id"], (database) => {
+				if (database) {
+					that.dbId = Router.currentParams["id"];
+					that.dbName = database.name;
+					that.dbFile = database.file;
+					that.dbVersion = database.version;
+					that.tables = JSON.parse(database.tables);
+				}
+			});
+		},
 	    addTable: function() {
 	        this.tables.push({
 	            name: "",
@@ -45,11 +68,30 @@ var Home = {
 	    },
 	    selectUser: function(callback = null) {
 	    	this.$emit('select-user', callback);
-	    }
+	    },
+	    save: function() {
+	    	json_string = unescape(encodeURIComponent(JSON.stringify(this.tables)));
+
+	    	page.saveDatabase(this.dbId, this.dbName, this.dbFile, this.dbVersion, json_string);
+	    },
+	    load: function(json_string) {
+	    	return JSON.parse(json_string);
+	    },
+	    toggleJSONTable: function() {
+	    	this.showJSON = !this.showJSON;
+	    	console.log(this.userInfo);
+	    },
+	    showJSONTable: function(tableName) {
+    		if (tableName == 'json' && !this.showJSON) {
+    			return false;
+    		} else {
+    			return true;
+    		}
+    	}
 	},
 	template: `
 		<div>
-			<custom-nav v-on:add-table="addTable" v-on:add-mapping="addMapping" v-on:show-code="showCode = true;" v-on:select-user="selectUser" :site-info="siteInfo"></custom-nav>
+			<custom-nav v-on:add-table="addTable" v-on:add-mapping="addMapping" v-on:save="save" v-on:show-code="showCode = true;" v-on:select-user="selectUser" :user-info="userInfo"></custom-nav>
 			<section class="section">
 			    <div class="container">
 			        <p style="margin-bottom: 15px;">Visual editor to create Dbschema files. Still a work in progress. <em>NOTE: The On Columns field for indexes are comma separated and the json table and json_id columns are automatically created.</em></p>
@@ -65,9 +107,10 @@ var Home = {
 			                        <option value="3">v3</option>
 			                    </select>
 			                </div>
+			                <a class="button is-small is-primary" v-on:click.prevent="toggleJSONTable()" style="margin-top: 5px;">Toggle json table</a>
 			            </div>
 			        </div>
-			        <db-table v-for="table in tables" v-model="table" :tables="tables" v-if="table.name != 'json' && !showJSON"></db-table>
+			        <db-table v-for="table in tables" v-model="table" :tables="tables" v-if="showJSONTable(table.name)"></db-table>
 			    </div>
 			</section>
 			<db-schema-code v-if="showCode" v-model="showCode" :tables="tables" :name="dbName" :file="dbFile" :version="dbVersion"></db-schema-code>
