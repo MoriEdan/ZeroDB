@@ -90,8 +90,13 @@ class ZeroApp extends ZeroFrame {
 
     getDatabases(f) {
         if (!app.userInfo || !app.userInfo.cert_user_id) return;
-        page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id) WHERE directory='users/" + app.userInfo.auth_address + "' AND cert_user_id='" + app.userInfo.cert_user_id + "'"], f);
+        Database.all().leftJoinUsing('json', 'json_id').where('directory', 'users/' + app.userInfo.auth_address).log("[getDatabases] ").get(this).then(f);
     }
+
+    /*getDatabases(f) {
+        if (!app.userInfo || !app.userInfo.cert_user_id) return;
+        page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id) WHERE directory='users/" + app.userInfo.auth_address + "' AND cert_user_id='" + app.userInfo.cert_user_id + "'"], f);
+    }*/
 
     getDatabase(dbId, f) {
         page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id) WHERE directory='users/" + app.userInfo.auth_address + "' AND cert_user_id='" + app.userInfo.cert_user_id + "' AND database_id=" + dbId], (databases) => {
@@ -171,6 +176,37 @@ class ZeroApp extends ZeroFrame {
 
 page = new ZeroApp();
 
+// Database Models
+var { Model, DbQuery } = require('./db.js');
+class Database extends Model {
+    static get tableName() { return "databases"; }
+
+    constructor() {
+        // Note: You can leave off columns if you don't
+        // want them stored in the model.
+        super({
+            "database_id": null,
+            "name": "",
+            "file": "",
+            "version": null,
+            "tables": "",
+            "date_updated": null,
+            "date_added": null
+        });
+    }
+
+    static getUserDatabases() {
+
+    }
+}
+
+Database.all().get(page)
+    .then(function (fulfilled) {
+        console.log(fulfilled);
+    });
+
+
+// Routes
 var Home = require("./router_pages/home.js");
 var MyDatabases = require("./router_pages/my_databases.js");
 var Explore = require("./router_pages/explore.js");
