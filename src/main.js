@@ -84,24 +84,31 @@ class ZeroApp extends ZeroFrame {
     }
 
     getAllDatabases(f) {
+        //page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id)"], f);
         if (!app.userInfo || !app.userInfo.cert_user_id) return;
-        page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id)"], f);
+        Database.all().leftJoinJson().get(this).then(f);
     }
 
     getDatabases(f) {
+        //page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id) WHERE directory='users/" + app.userInfo.auth_address + "' AND cert_user_id='" + app.userInfo.cert_user_id + "'"], f);
         if (!app.userInfo || !app.userInfo.cert_user_id) return;
-        Database.all().leftJoinUsing('json', 'json_id').where('directory', 'users/' + app.userInfo.auth_address).log("[getDatabases] ").get(this).then(f);
+        Database.userDatabases(app.userInfo.auth_address).get(this).then(f);
     }
 
-    /*getDatabases(f) {
-        if (!app.userInfo || !app.userInfo.cert_user_id) return;
-        page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id) WHERE directory='users/" + app.userInfo.auth_address + "' AND cert_user_id='" + app.userInfo.cert_user_id + "'"], f);
-    }*/
+    getUserDatabases(auth_address, f) {
+        Database.userDatabases(auth_address).get(this).then(f);
+    }
 
     getDatabase(dbId, f) {
-        page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id) WHERE directory='users/" + app.userInfo.auth_address + "' AND cert_user_id='" + app.userInfo.cert_user_id + "' AND database_id=" + dbId], (databases) => {
+        /*page.cmd('dbQuery', ["SELECT * FROM databases LEFT JOIN json USING (json_id) WHERE directory='users/" + app.userInfo.auth_address + "' AND cert_user_id='" + app.userInfo.cert_user_id + "' AND database_id=" + dbId], (databases) => {
             if (f != null && typeof f == 'function') f(databases[0]);
-        });
+        });*/
+        if (!app.userInfo || !app.userInfo.cert_user_id) return;
+        Database.userDatabase(app.userInfo.auth_address, dbId).get(this).then(f);
+    }
+
+    getUserDatabase(auth_address, dbId, f) {
+        Database.userDatabase(auth_address, dbId).get(this).then(f);
     }
 
     saveDatabase(dbId = null, dbName, dbFile, dbVersion, dbTablesJSONString, f = null) {
@@ -191,29 +198,46 @@ class Database extends Model {
             "version": null,
             "tables": "",
             "date_updated": null,
-            "date_added": null
+            "date_added": null,
+            // Left Join json
+            "directory": "",
+            "cert_user_id": ""
         });
     }
 
-    static getUserDatabases() {
+    static userDatabases(auth_address) {
+        return Database.all().leftJoinJson().where('directory', 'users/' + auth_address).log("[userDatabases] ");
+    }
 
+    static userDatabase(auth_address, dbId) {
+        return Database.all().leftJoinJson().where('directory', 'users/' + auth_address)
+            .andWhere('database_id', dbId).limit(1).log("[userDatabase] ");
     }
 }
 
-Database.all().get(page)
+/*Database.select("database_id", "name", "directory", "cert_user_id").leftJoinJson()
+    .get(page)
     .then(function (fulfilled) {
         console.log(fulfilled);
     });
+
+Database.all().get(page).then((databases) => {
+    console.log(databases);
+});*/
 
 
 // Routes
 var Home = require("./router_pages/home.js");
 var MyDatabases = require("./router_pages/my_databases.js");
 var Explore = require("./router_pages/explore.js");
+var UserProfile = require("./router_pages/user_profile.js");
+var UserProfileDatabase = require("./router_pages/user_profile_database.js");
 
 VueZeroFrameRouter.VueZeroFrameRouter_Init(Router, app, [
     { route: 'explore', component: Explore },
     { route: 'me/databases', component: MyDatabases },
     { route: 'me/database/:id', component: Home },
+    { route: ':userauthaddress/:id', component: UserProfileDatabase },
+    { route: ':userauthaddress', component: UserProfile },
     { route: '', component: Home }
 ]);

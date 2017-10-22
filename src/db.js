@@ -5,7 +5,7 @@ class DbQuery {
 		this.query = "";
 		this.tableName = tableName;
 		this.modelType = modelType;
-		this.limit = false;
+		this.isLimited = false;
 		//console.log(this.modelType);
 	}
 
@@ -14,14 +14,15 @@ class DbQuery {
 
 		if (arguments.length > 0) {
 			for (var i = 0; i < arguments.length; i++) {
-				this.query += arguments[i] + ",";
-				if (i != arguments.length - 1) this.query += " ";
+				if (arguments[i] == null) continue;
+				if (i != arguments.length - 1) this.query += arguments[i] + ", ";
+				else this.query += arguments[i] + " ";
 			}
 		} else {
 			this.query += "*";
 		}
 
-		return this;
+		return this.from();
 	}
 
 	from() {
@@ -31,22 +32,22 @@ class DbQuery {
 
 	// TOOD: In Laravel, this returns a collection
 	all() {
-		return this.select().from();
+		return this.select();
 	}
 
 	limit(i) {
 		if (this.query == "") {
-			this.select().from();
+			this.select();
 		}
 
 		this.query += " LIMIT " + i;
-		this.limit = true;
+		this.isLimited = true;
 		return this;
 	}
 
 	where(column, value) { // Make this add AND or OR when multiple ones
 		if (this.query == "") {
-			this.select().from();
+			this.select();
 		}
 
 		this.query += " WHERE " + column + "=";
@@ -58,9 +59,23 @@ class DbQuery {
 		return this;
 	}
 
+	andWhere(column, value) {
+		if (this.query == "") {
+			this.select();
+		}
+
+		this.query += " AND " + column + "=";
+		if (typeof value == 'string') {
+			this.query += "'" + value + "'";
+		} else {
+			this.query += value;
+		}
+		return this;
+	}
+
 	orderBy(column, direction) {
 		if (this.query == "") {
-			this.select().from();
+			this.select();
 		}
 
 		this.query += " ORDER BY " + column;
@@ -85,15 +100,19 @@ class DbQuery {
 
 	leftJoinUsing(tableName, column) {
 		if (this.query == "") {
-			this.select().from();
+			this.select();
 		}
 
 		this.query += " LEFT JOIN " + tableName + " USING (" + column + ")";
 		return this;
 	}
 
+	leftJoinJson() {
+		return this.leftJoinUsing('json', 'json_id');
+	}
+
 	log(prefix = null) {
-		console.log(prefix + this.query);
+		console.log((prefix || "") + this.query);
 		return this;
 	}
 
@@ -114,6 +133,10 @@ class DbQuery {
 					// function work.
 					if (newRow.columnsDefaults.hasOwnProperty(property)) {
 						newRow[property] = row[property];
+
+						//if (property == "directory") {
+							// TODO: Add setting to automatically get auth address from the directory field
+						//}
 					}
 				}
 			}
@@ -148,6 +171,10 @@ class Model {
 	static all() {
 		//return this.zeroframe.cmdp('dbQuery', ["SELECT * FROM " + this.tableName]);
 		return new DbQuery(this.tableName, this).all();
+	}
+
+	static select() {
+		return new DbQuery(this.tableName, this).select(...arguments);
 	}
 
 	// Inserts new model into database, or updates existing model.

@@ -25,6 +25,7 @@ var Explore = {
 			var that = this;
 	    	page.getAllDatabases((databases) => {
 	    		that.databases = databases;
+	    		console.log(databases);
 	    	});
 		},
 	    addTable: function() {
@@ -37,7 +38,10 @@ var Explore = {
 	    },
 	    dateCreated: function(date) {
 	    	return moment(date).fromNow();
-	    }
+	    },
+		getAuthAddress: function(directory) {
+			return directory.replace(/users\//, '').replace(/\//g, '');
+		}
 	},
 	template: `
 		<div>
@@ -46,10 +50,10 @@ var Explore = {
 				<div class="container">
 					<a class="button is-small is-primary" v-on:click.prevent="goto('')">New Database</a>
 					<div v-for="database in databases" style="margin-top: 5px;">
-						<h3><a v-on:click.prevent="goto('me/database/' + database.database_id)">{{ database.name }}</a></h3>
+						<h3><a v-on:click.prevent="goto(getAuthAddress(database.directory) + '/' + database.database_id)">{{ database.name }}</a></h3>
 						<p>
 							{{ database.file }} - v{{ database.version }}<br>
-							{{ database.cert_user_id }} - {{ dateCreated(database.date_added) }}
+							<a v-on:click.prevent="goto(getAuthAddress(database.directory))">{{ database.cert_user_id }}</a> - {{ dateCreated(database.date_added) }}
 						</p>
 					</div>
 				</div>

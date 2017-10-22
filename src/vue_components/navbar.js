@@ -2,7 +2,7 @@ var Vue = require("vue/dist/vue.min.js");
 var Router = require("../router.js");
 
 Vue.component('custom-nav', {
-    props: ['shadow', 'hideRight', 'userInfo'],
+    props: ['shadow', 'hideRight', 'disableRightAddSave', 'userInfo'],
     data: function() {
         return {
             menuShown: false // For touch devices
@@ -60,7 +60,7 @@ Vue.component('custom-nav', {
                             <a class="navbar-item is-hidden-desktop" v-on:click.prevent="login()" v-else>Login</a>
                             <a class="navbar-item is-hidden-desktop" v-on:click.prevent="goto('me/databases')" v-if="isLoggedIn">My Databases</a>
                             <a class="navbar-item is-hidden-desktop" v-on:click.prevent="goto('explore')">Explore</a>
-                            <div class="navbar-item has-dropdown is-hoverable" v-if="!hideRight">
+                            <div class="navbar-item has-dropdown is-hoverable" v-if="!hideRight && !disableRightAddSave">
                                 <a class="navbar-link">Add</a>
                                 <div class="navbar-dropdown is-right">
                                     <a class="navbar-item" href="#" v-on:click.prevent="addTable()">Table</a>
@@ -71,7 +71,7 @@ Vue.component('custom-nav', {
                                     <a class="navbar-item">Static JSON File</a>
                                 </div>
                             </div>
-                            <a class="navbar-item" v-on:click.prevent="save()" v-if="!hideRight">Save</a>
+                            <a class="navbar-item" v-on:click.prevent="save()" v-if="!hideRight && !disableRightAddSave">Save</a>
                             <a class="navbar-item" href="#" v-on:click.prevent="showCode()" v-if="!hideRight">Code</a>
                         </div>
                     </div>

@@ -39,7 +39,8 @@ var Home = {
 	methods: {
 		getDatabase: function() {
 			var that = this;
-			page.getDatabase(Router.currentParams["id"], (database) => {
+			page.getDatabase(Number(Router.currentParams["id"]), (databases) => {
+				var database = databases[0];
 				if (database) {
 					that.dbId = Router.currentParams["id"];
 					that.dbName = database.name;
@@ -79,7 +80,6 @@ var Home = {
 	    },
 	    toggleJSONTable: function() {
 	    	this.showJSON = !this.showJSON;
-	    	console.log(this.userInfo);
 	    },
 	    showJSONTable: function(tableName) {
     		if (tableName == 'json' && !this.showJSON) {
