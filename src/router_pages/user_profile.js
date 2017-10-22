@@ -52,7 +52,7 @@ var UserProfile = {
 				<div class="container">
 					<h1>{{ userId ? userId : "User Doesn't Exist!" }}</h1>
 					<div v-for="database in databases" style="margin-top: 5px;">
-						<h3><a v-on:click.prevent="goto(getAuthAddress(database.directory) + '/' + database.database_id)">{{ database.name }}</a></h3>
+						<h3><a v-on:click.prevent="goto(getAuthAddress(database.directory) + '/' + database.database_id)">{{ database.name ? database.name : "[No Name]" }}</a></h3>
 						<p>
 							{{ database.file }} - v{{ database.version }}
 							{{ dateCreated(database.date_added) }}
